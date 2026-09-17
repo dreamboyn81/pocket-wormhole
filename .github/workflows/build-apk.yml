@@ -24,7 +24,6 @@ jobs:
           java-version: "17"
           cache: gradle
 
-      # v3 会默认安装已废弃的 tools 包，容易失败；v4 + 不装 tools
       - name: Setup Android SDK
         uses: android-actions/setup-android@v4
         with:
@@ -38,44 +37,30 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      # 去掉上游 gradle.properties 里的本机 JDK 路径，避免 CI 失败
       - name: Sanitize gradle.properties
         run: |
           if [ -f gradle.properties ]; then
             sed -i '/^org\.gradle\.java\.home=/d' gradle.properties
           fi
 
-      - name: Build debug APK
-        run: ./gradlew assembleDebug --stacktrace --no-daemon
-
       - name: Build release APK (unsigned)
         run: ./gradlew assembleRelease --stacktrace --no-daemon
 
       - name: List outputs
-        run: |
-          find app/build/outputs/apk -name "*.apk" -ls || true
-
-      - name: Upload debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: pocket-wormhole-debug
-          path: app/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
+        run: find app/build/outputs/apk -name "*.apk" -ls || true
 
       - name: Upload release APK (unsigned)
         uses: actions/upload-artifact@v4
         with:
           name: pocket-wormhole-release-unsigned
           path: app/build/outputs/apk/release/*.apk
-          if-no-files-found: warn
+          if-no-files-found: error
 
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            app/build/outputs/apk/debug/*.apk
-            app/build/outputs/apk/release/*.apk
+          files: app/build/outputs/apk/release/*.apk
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

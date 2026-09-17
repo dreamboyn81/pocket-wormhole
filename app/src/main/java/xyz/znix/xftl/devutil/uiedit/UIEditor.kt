@@ -35,7 +35,7 @@ class UIEditor(val df: Datafile, val filename: String) : BasicGame("XFTL UI Edit
 
     private lateinit var windowRenderer: WindowRenderer
 
-    private val translator = Translator(df, "en")
+    private val translator = Translator(df, "zh")
 
     private var ui: SpecDeserialiser.LoadedUI? = null
     private var loadError: String = ""

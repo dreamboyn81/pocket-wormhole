@@ -34,7 +34,7 @@ class SelectShipState(private val datafile: Datafile, private val main: MainGame
     val screenSize = Point(0, 0)
 
     val blueprints: BlueprintManager = BlueprintManager(datafile, true)
-    val translator: Translator = Translator(datafile, "en")
+    val translator: Translator = Translator(datafile, "zh")
     val animations: Animations = Animations(datafile)
 
     val roomImageMeta: RoomImageMeta = RoomImageMeta.loadFromResource()
