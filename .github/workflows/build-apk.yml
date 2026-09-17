@@ -18,17 +18,22 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
           cache: gradle
 
+      # v3 会默认安装已废弃的 tools 包，容易失败；v4 + 不装 tools
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
+        with:
+          packages: platform-tools
 
-      - name: Accept Android licenses
-        run: yes | sdkmanager --licenses >/dev/null || true
+      - name: Install platform & build-tools
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
       - name: Make gradlew executable
         run: chmod +x gradlew
